@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-search.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title>Utilization in New York City Schools (2021-2022)</title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/leaflet-svg-shape-markers.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-search.js"></script>
+        <script src="data/Boroughs_1.js"></script>
+        <script src="data/SchoolDistrict_2.js"></script>
+        <script src="data/SchoolUtilizationRates20212022_3.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+            highlightLayer.openPopup();
+        }
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:18, minZoom:10
+        })
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+            if (bounds_group.getLayers().length) {
+                map.fitBounds(bounds_group.getBounds());
+            }
+            map.setMaxBounds(map.getBounds());
+        }
+        map.createPane('pane_MapView_0');
+        map.getPane('pane_MapView_0').style.zIndex = 400;
+        var layer_MapView_0 = L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+            pane: 'pane_MapView_0',
+            opacity: 0.304,
+            attribution: '',
+            minZoom: 10,
+            maxZoom: 18,
+            minNativeZoom: 0,
+            maxNativeZoom: 20
+        });
+        layer_MapView_0;
+        map.addLayer(layer_MapView_0);
+        function pop_Boroughs_1(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2"><strong>boro_name</strong><br />' + (feature.properties['boro_name'] !== null ? autolinker.link(feature.properties['boro_name'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_Boroughs_1_0() {
+            return {
+                pane: 'pane_Boroughs_1',
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: false,
+            }
+        }
+        map.createPane('pane_Boroughs_1');
+        map.getPane('pane_Boroughs_1').style.zIndex = 401;
+        map.getPane('pane_Boroughs_1').style['mix-blend-mode'] = 'normal';
+        var layer_Boroughs_1 = new L.geoJson(json_Boroughs_1, {
+            attribution: '',
+            interactive: false,
+            dataVar: 'json_Boroughs_1',
+            layerName: 'layer_Boroughs_1',
+            pane: 'pane_Boroughs_1',
+            onEachFeature: pop_Boroughs_1,
+            style: style_Boroughs_1_0,
+        });
+        bounds_group.addLayer(layer_Boroughs_1);
+        map.addLayer(layer_Boroughs_1);
+        function pop_SchoolDistrict_2(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2"><strong>School District</strong><br />' + (feature.properties['SchoolDist'] !== null ? autolinker.link(feature.properties['SchoolDist'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_SchoolDistrict_2_0() {
+            return {
+                pane: 'pane_SchoolDistrict_2',
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '10,5',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0, 
+                fillOpacity: 0,
+                interactive: false,
+            }
+        }
+        map.createPane('pane_SchoolDistrict_2');
+        map.getPane('pane_SchoolDistrict_2').style.zIndex = 402;
+        map.getPane('pane_SchoolDistrict_2').style['mix-blend-mode'] = 'normal';
+        var layer_SchoolDistrict_2 = new L.geoJson(json_SchoolDistrict_2, {
+            attribution: '',
+            interactive: false,
+            dataVar: 'json_SchoolDistrict_2',
+            layerName: 'layer_SchoolDistrict_2',
+            pane: 'pane_SchoolDistrict_2',
+            onEachFeature: pop_SchoolDistrict_2,
+            style: style_SchoolDistrict_2_0,
+        });
+        bounds_group.addLayer(layer_SchoolDistrict_2);
+        map.addLayer(layer_SchoolDistrict_2);
+        function pop_SchoolUtilizationRates20212022_3(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">School District</th>\
+                        <td>' + (feature.properties['School District'] !== null ? autolinker.link(feature.properties['School District'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Council District</th>\
+                        <td>' + (feature.properties['Council District'] !== null ? autolinker.link(feature.properties['Council District'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>School Name</strong><br />' + (feature.properties['School Name'] !== null ? autolinker.link(feature.properties['School Name'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">School Level</th>\
+                        <td>' + (feature.properties['School Type (CSM)'] !== null ? autolinker.link(feature.properties['School Type (CSM)'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Utilization Rate</th>\
+                        <td>' + (feature.properties['Utilization'] !== null ? autolinker.link(feature.properties['Utilization'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Seats Needed</th>\
+                        <td>' + (feature.properties['Seats Needed'] !== null ? autolinker.link(feature.properties['Seats Needed'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_SchoolUtilizationRates20212022_3_0(feature) {
+            if (feature.properties['q2wHide_Util.'] >= 0.000000 && feature.properties['q2wHide_Util.'] <= 0.500000 ) {
+                return {
+                pane: 'pane_SchoolUtilizationRates20212022_3',
+                shape: 'diamond',
+                radius: 6.0,
+                opacity: 1,
+                color: 'rgba(133,146,153,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(26,150,65,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['q2wHide_Util.'] >= 0.500000 && feature.properties['q2wHide_Util.'] <= 0.750000 ) {
+                return {
+                pane: 'pane_SchoolUtilizationRates20212022_3',
+                shape: 'diamond',
+                radius: 6.0,
+                opacity: 1,
+                color: 'rgba(133,146,153,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(166,217,106,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['q2wHide_Util.'] >= 0.750000 && feature.properties['q2wHide_Util.'] <= 0.990000 ) {
+                return {
+                pane: 'pane_SchoolUtilizationRates20212022_3',
+                shape: 'diamond',
+                radius: 6.0,
+                opacity: 1,
+                color: 'rgba(133,146,153,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,255,82,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['q2wHide_Util.'] >= 0.990000 && feature.properties['q2wHide_Util.'] <= 1.250000 ) {
+                return {
+                pane: 'pane_SchoolUtilizationRates20212022_3',
+                shape: 'diamond',
+                radius: 6.0,
+                opacity: 1,
+                color: 'rgba(133,146,153,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(253,174,97,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['q2wHide_Util.'] >= 1.250000 && feature.properties['q2wHide_Util.'] <= 2.930000 ) {
+                return {
+                pane: 'pane_SchoolUtilizationRates20212022_3',
+                shape: 'diamond',
+                radius: 6.0,
+                opacity: 1,
+                color: 'rgba(133,146,153,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(215,25,28,1.0)',
+                interactive: true,
+            }
+            }
+        }
+        map.createPane('pane_SchoolUtilizationRates20212022_3');
+        map.getPane('pane_SchoolUtilizationRates20212022_3').style.zIndex = 403;
+        map.getPane('pane_SchoolUtilizationRates20212022_3').style['mix-blend-mode'] = 'normal';
+        var layer_SchoolUtilizationRates20212022_3 = new L.geoJson(json_SchoolUtilizationRates20212022_3, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_SchoolUtilizationRates20212022_3',
+            layerName: 'layer_SchoolUtilizationRates20212022_3',
+            pane: 'pane_SchoolUtilizationRates20212022_3',
+            onEachFeature: pop_SchoolUtilizationRates20212022_3,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.shapeMarker(latlng, style_SchoolUtilizationRates20212022_3_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_SchoolUtilizationRates20212022_3);
+        map.addLayer(layer_SchoolUtilizationRates20212022_3);
+            var title = new L.Control();
+            title.onAdd = function (map) {
+                this._div = L.DomUtil.create('div', 'info');
+                this.update();
+                return this._div;
+            };
+            title.update = function () {
+                this._div.innerHTML = '<h2>Utilization in New York City Schools (2021-2022)</h2>';
+            };
+            title.addTo(map);
+        setBounds();
+        map.addControl(new L.Control.Search({
+            layer: layer_SchoolUtilizationRates20212022_3,
+            initial: false,
+            hideMarkerOnCollapse: true,
+            propertyName: 'School Name'}));
+        document.getElementsByClassName('search-button')[0].className +=
+         ' fa fa-binoculars';
+        resetLabels([layer_SchoolDistrict_2]);
+        map.on("zoomend", function(){
+            resetLabels([layer_SchoolDistrict_2]);
+        });
+        map.on("layeradd", function(){
+            resetLabels([layer_SchoolDistrict_2]);
+        });
+        map.on("layerremove", function(){
+            resetLabels([layer_SchoolDistrict_2]);
+        });
+        </script>
+    </body>
+</html>
